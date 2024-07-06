@@ -38,12 +38,27 @@ class xiaomi(metaclass=LogBase):
         Redmi A1, Poco F1, Redmi 5 Pro, 6 Pro, 7 Pro, 7A, 8, 8A, 8A Dual, 8A Pro, Y2, S2
         """
         authcmd = b"<?xml version=\"1.0\" ?><data> <sig TargetName=\"sig\" size_in_bytes=\"256\" verbose=\"1\"/></data>"
-        rsp = self.fh.xmlsend(authcmd)
-        if rsp.resp:
-            rsp = self.fh.xmlsend(self.xiaomi_authdata)
-            if rsp.resp:
-                if "value" in rsp.resp:
-                    if rsp.resp["value"] == "ACK":
-                        if 'authenticated' in rsp.log[0].lower() and 'true' in rsp.log[0].lower():
-                            return True
-        return False
+        customsig = input("If you want to use your own signature, enter Y, otherwise enter N: ")
+        if customsig.upper() in ("Y", "N"):
+            if customsig.upper() == "Y":
+                filename = input('Enter path to your EDL signature: ')
+                with open(filename, 'rb') as rf:
+                    self.data = rf.read()
+                    rsp = self.fh.xmlsend(authcmd)
+                    if rsp.resp:
+                        rsp = self.fh.xmlsend(self.data)
+                        if "value" in rsp.resp:
+                            if rsp.resp["value"] == "ACK":
+                                if 'authenticated' in rsp.log[0].lower() and 'true' in rsp.log[0].lower():
+                                    return True
+                    return False
+            if customsig.upper() == "N":
+                rsp = self.fh.xmlsend(authcmd)
+                if rsp.resp:
+                        rsp = self.fh.xmlsend(self.xiaomi_authdata)
+                        if rsp.resp:
+                            if "value" in rsp.resp:
+                                if rsp.resp["value"] == "ACK":
+                                    if 'authenticated' in rsp.log[0].lower() and 'true' in rsp.log[0].lower():
+                                        return True
+                return False
