@@ -47,18 +47,15 @@ class xiaomi(metaclass=LogBase):
                     rsp = self.fh.xmlsend(authcmd)
                     if rsp.resp:
                         rsp = self.fh.xmlsend(self.data)
-                        if "value" in rsp.resp:
-                            if rsp.resp["value"] == "ACK":
-                                if 'authenticated' in rsp.log[0].lower() and 'true' in rsp.log[0].lower():
-                                    return True
+                        if rsp.resp:
+                            if 'authenticated' in rsp.log[0].lower():
+                                return True
                     return False
             if customsig.upper() == "N":
                 rsp = self.fh.xmlsend(authcmd)
                 if rsp.resp:
                         rsp = self.fh.xmlsend(self.xiaomi_authdata)
                         if rsp.resp:
-                            if "value" in rsp.resp:
-                                if rsp.resp["value"] == "ACK":
-                                    if 'authenticated' in rsp.log[0].lower() and 'true' in rsp.log[0].lower():
-                                        return True
+                            if 'authenticated' in rsp.log[0].lower():
+                                return True
                 return False
